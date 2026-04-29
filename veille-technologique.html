@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Veille Technologique — Support & Cybersécurité</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #080c14;
+      --surface: #0d1322;
+      --surface2: #111827;
+      --border: rgba(255,255,255,0.06);
+      --c1: #00c8ff;   /* cyan */
+      --c2: #7b5cff;   /* violet */
+      --c3: #ff4d7d;   /* rose */
+      --c4: #00e5a0;   /* vert */
+      --text: #e8edf5;
+      --muted: #6b7899;
+      --tag-bg: rgba(0,200,255,0.1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── NOISE OVERLAY ─── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 0;
+      opacity: .5;
+    }
+
+    /* ─── GLOW BLOBS ─── */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: .18;
+      pointer-events: none;
+      z-index: 0;
+      animation: drift 20s ease-in-out infinite alternate;
+    }
+    .blob-1 { width: 600px; height: 600px; background: var(--c2); top: -200px; left: -150px; animation-delay: 0s; }
+    .blob-2 { width: 500px; height: 500px; background: var(--c1); bottom: 10%; right: -100px; animation-delay: -7s; }
+    .blob-3 { width: 400px; height: 400px; background: var(--c3); top: 50%; left: 40%; animation-delay: -14s; }
+
+    @keyframes drift {
+      from { transform: translate(0, 0) scale(1); }
+      to   { transform: translate(40px, 30px) scale(1.08); }
+    }
+
+    /* ─── HEADER ─── */
+    header {
+      position: relative; z-index: 10;
+      padding: 0 40px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 70px;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      background: rgba(8,12,20,.7);
+      position: sticky; top: 0;
+    }
+
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800; font-size: 1.1rem;
+      letter-spacing: .04em;
+      background: linear-gradient(135deg, var(--c1), var(--c2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    nav { display: flex; gap: 8px; }
+    nav a {
+      font-size: .8rem; font-weight: 500; letter-spacing: .05em;
+      color: var(--muted); text-decoration: none;
+      padding: 6px 14px; border-radius: 20px;
+      transition: all .2s;
+    }
+    nav a:hover { color: var(--c1); background: rgba(0,200,255,.07); }
+
+    /* ─── HERO ─── */
+    .hero {
+      position: relative; z-index: 1;
+      text-align: center;
+      padding: 110px 24px 80px;
+      overflow: hidden;
+    }
+
+    .hero-label {
+      display: inline-block;
+      font-size: .72rem; font-weight: 600;
+      letter-spacing: .18em; text-transform: uppercase;
+      color: var(--c1);
+      border: 1px solid rgba(0,200,255,.3);
+      padding: 5px 16px; border-radius: 20px;
+      margin-bottom: 28px;
+      animation: fadeUp .8s ease both;
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.4rem, 6vw, 5rem);
+      font-weight: 800; line-height: 1.05;
+      letter-spacing: -.02em;
+      animation: fadeUp .8s .1s ease both;
+    }
+
+    h1 span {
+      background: linear-gradient(135deg, var(--c1) 0%, var(--c2) 60%, var(--c3) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    .hero-sub {
+      margin-top: 20px;
+      font-size: 1.05rem; color: var(--muted); max-width: 600px;
+      margin-left: auto; margin-right: auto;
+      line-height: 1.7;
+      animation: fadeUp .8s .2s ease both;
+    }
+
+    .hero-grid {
+      margin-top: 56px;
+      display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;
+      animation: fadeUp .8s .3s ease both;
+    }
+
+    .stat-chip {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 12px 20px;
+    }
+    .stat-chip .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .stat-chip .val { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 700; }
+    .stat-chip .lbl { font-size: .75rem; color: var(--muted); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── SECTION WRAPPER ─── */
+    .section {
+      position: relative; z-index: 1;
+      max-width: 1200px; margin: 0 auto;
+      padding: 80px 24px;
+    }
+
+    .section-header {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px;
+      margin-bottom: 40px;
+    }
+
+    .section-tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: .72rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
+      padding: 5px 12px; border-radius: 6px;
+      margin-bottom: 10px;
+    }
+    .section-tag .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      font-weight: 800; letter-spacing: -.02em;
+    }
+
+    .section-count {
+      font-size: .8rem; color: var(--muted); white-space: nowrap;
+    }
+
+    /* ─── CARDS GRID ─── */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 26px;
+      display: flex; flex-direction: column; gap: 14px;
+      transition: transform .25s, border-color .25s, box-shadow .25s;
+      position: relative; overflow: hidden;
+      animation: fadeUp .6s both;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 3px;
+      border-radius: 16px 16px 0 0;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(255,255,255,.12);
+      box-shadow: 0 20px 60px rgba(0,0,0,.4);
+    }
+
+    .card-date {
+      font-size: .72rem; font-weight: 500; letter-spacing: .08em;
+      color: var(--muted);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .card-date::before { content: ''; display: block; width: 4px; height: 4px; border-radius: 50%; background: currentColor; }
+
+    .card-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem; font-weight: 700; line-height: 1.4;
+    }
+
+    .card-desc {
+      font-size: .85rem; color: var(--muted); line-height: 1.65;
+      flex: 1;
+    }
+
+    .card-link {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: .8rem; font-weight: 600;
+      text-decoration: none; padding: 9px 18px;
+      border-radius: 8px; border: 1px solid currentColor;
+      transition: all .2s; align-self: flex-start;
+      letter-spacing: .03em;
+    }
+    .card-link:hover { opacity: .85; transform: translateX(2px); }
+    .card-link svg { width: 13px; height: 13px; }
+
+    /* ─── COLOR THEMES PER SECTION ─── */
+
+    /* Support – cyan */
+    #support .section-tag  { background: rgba(0,200,255,.08); color: var(--c1); }
+    #support .section-tag .dot { background: var(--c1); }
+    #support .card::before { background: linear-gradient(90deg, var(--c1), transparent); }
+    #support .card-link    { color: var(--c1); }
+    #support .card-link:hover { background: rgba(0,200,255,.08); }
+    #support .stat-dot { background: var(--c1); }
+
+    /* Cybermenaces – rose */
+    #cyber .section-tag  { background: rgba(255,77,125,.08); color: var(--c3); }
+    #cyber .section-tag .dot { background: var(--c3); }
+    #cyber .card::before { background: linear-gradient(90deg, var(--c3), transparent); }
+    #cyber .card-link    { color: var(--c3); }
+    #cyber .card-link:hover { background: rgba(255,77,125,.08); }
+
+    /* Réseaux – vert */
+    #reseaux .section-tag  { background: rgba(0,229,160,.08); color: var(--c4); }
+    #reseaux .section-tag .dot { background: var(--c4); }
+    #reseaux .card::before { background: linear-gradient(90deg, var(--c4), transparent); }
+    #reseaux .card-link    { color: var(--c4); }
+    #reseaux .card-link:hover { background: rgba(0,229,160,.08); }
+
+    /* ─── DIVIDER ─── */
+    .divider {
+      max-width: 1200px; margin: 0 auto;
+      border: none; border-top: 1px solid var(--border);
+    }
+
+    /* ─── CONCLUSION ─── */
+    .conclusion {
+      position: relative; z-index: 1;
+      max-width: 900px; margin: 0 auto;
+      padding: 80px 24px 120px;
+    }
+
+    .conclusion-box {
+      background: linear-gradient(135deg, rgba(123,92,255,.12), rgba(0,200,255,.08));
+      border: 1px solid rgba(123,92,255,.25);
+      border-radius: 24px;
+      padding: 48px;
+    }
+
+    .conclusion-label {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: .72rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
+      color: var(--c2); margin-bottom: 20px;
+    }
+    .conclusion-label .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--c2); }
+
+    .conclusion h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 800; margin-bottom: 24px; line-height: 1.2;
+    }
+
+    .conclusion p {
+      font-size: .95rem; color: var(--muted); line-height: 1.8; margin-bottom: 16px;
+    }
+
+    .conclusion p strong { color: var(--text); font-weight: 500; }
+
+    .conclusion-pills {
+      display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px;
+    }
+
+    .pill {
+      font-size: .78rem; font-weight: 600;
+      padding: 6px 16px; border-radius: 20px;
+      border: 1px solid;
+    }
+    .pill-cyan  { color: var(--c1); border-color: rgba(0,200,255,.3); background: rgba(0,200,255,.06); }
+    .pill-violet{ color: var(--c2); border-color: rgba(123,92,255,.3); background: rgba(123,92,255,.06); }
+    .pill-rose  { color: var(--c3); border-color: rgba(255,77,125,.3); background: rgba(255,77,125,.06); }
+    .pill-green { color: var(--c4); border-color: rgba(0,229,160,.3); background: rgba(0,229,160,.06); }
+
+    /* ─── FOOTER ─── */
+    footer {
+      position: relative; z-index: 1;
+      border-top: 1px solid var(--border);
+      text-align: center; padding: 28px;
+      font-size: .75rem; color: var(--muted);
+      letter-spacing: .05em;
+    }
+
+    /* ─── SCROLL ANIMATION ─── */
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity .6s, transform .6s; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ─── RSS SECTION ─── */
+    #rss { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+    .rss-tabs {
+      display: flex; gap: 6px; flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+
+    .rss-tab {
+      font-size: .78rem; font-weight: 600; letter-spacing: .04em;
+      padding: 7px 16px; border-radius: 8px;
+      border: 1px solid var(--border);
+      background: transparent; color: var(--muted);
+      cursor: pointer; transition: all .2s;
+    }
+    .rss-tab:hover  { color: var(--text); border-color: rgba(255,255,255,.15); }
+    .rss-tab.active { color: var(--c2); border-color: rgba(123,92,255,.4); background: rgba(123,92,255,.08); }
+
+    .rss-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .rss-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 22px;
+      display: flex; flex-direction: column; gap: 10px;
+      transition: transform .2s, border-color .2s;
+      text-decoration: none; color: inherit;
+      position: relative; overflow: hidden;
+    }
+    .rss-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--c2), var(--c1));
+    }
+    .rss-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,.1); }
+
+    .rss-meta {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 8px;
+    }
+    .rss-source {
+      font-size: .68rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      color: var(--c2);
+      background: rgba(123,92,255,.1);
+      padding: 3px 9px; border-radius: 4px;
+    }
+    .rss-date { font-size: .7rem; color: var(--muted); }
+
+    .rss-title {
+      font-family: 'Syne', sans-serif;
+      font-size: .92rem; font-weight: 700; line-height: 1.4;
+      color: var(--text);
+    }
+
+    .rss-desc {
+      font-size: .8rem; color: var(--muted); line-height: 1.6;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+    }
+
+    .rss-read {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: .75rem; font-weight: 600; color: var(--c2);
+      margin-top: 4px;
+    }
+    .rss-read svg { width: 11px; height: 11px; }
+
+    .rss-loading {
+      grid-column: 1/-1;
+      text-align: center; padding: 48px;
+      color: var(--muted); font-size: .9rem;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+
+    .rss-spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(123,92,255,.3);
+      border-top-color: var(--c2);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .rss-error {
+      grid-column: 1/-1;
+      text-align: center; padding: 32px;
+      color: var(--c3); font-size: .85rem;
+      background: rgba(255,77,125,.05);
+      border: 1px solid rgba(255,77,125,.15);
+      border-radius: 12px;
+    }
+
+    .rss-live-dot {
+      display: inline-block;
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--c4);
+      box-shadow: 0 0 0 0 rgba(0,229,160,.4);
+      animation: pulse 2s infinite;
+      margin-right: 6px;
+    }
+    @keyframes pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(0,229,160,.5); }
+      70%  { box-shadow: 0 0 0 8px rgba(0,229,160,0); }
+      100% { box-shadow: 0 0 0 0 rgba(0,229,160,0); }
+    }
+
+    .rss-refresh {
+      font-size: .75rem; font-weight: 600; color: var(--muted);
+      background: none; border: 1px solid var(--border);
+      padding: 5px 12px; border-radius: 6px; cursor: pointer;
+      transition: all .2s; display: flex; align-items: center; gap: 6px;
+    }
+    .rss-refresh:hover { color: var(--c2); border-color: rgba(123,92,255,.3); }
+    .rss-refresh svg { width: 12px; height: 12px; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 640px) {
+      header { padding: 0 20px; }
+      nav { display: none; }
+      .conclusion-box { padding: 28px 22px; }
+      .cards { grid-template-columns: 1fr; }
+      .rss-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Blobs -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="logo">⬡ VeilleTech</div>
+    <nav>
+      <a href="#support">Support</a>
+      <a href="#cyber">Cybermenaces</a>
+      <a href="#reseaux">Réseaux</a>
+      <a href="#conclusion">Conclusion</a>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-label">📡 Veille Technologique 2024 – 2025</div>
+    <h1>Support, <span>Cybersécurité</span><br>& Réseaux</h1>
+    <p class="hero-sub">
+      Une veille complète sur l'automatisation du support informatique,
+      les menaces cyber et la sécurité des réseaux pour préparer le métier de demain.
+    </p>
+    <div class="hero-grid">
+      <div class="stat-chip">
+        <div class="dot" style="background:var(--c1)"></div>
+        <div>
+          <div class="val" style="color:var(--c1)">05</div>
+          <div class="lbl">Articles — Support</div>
+        </div>
+      </div>
+      <div class="stat-chip">
+        <div class="dot" style="background:var(--c3)"></div>
+        <div>
+          <div class="val" style="color:var(--c3)">06</div>
+          <div class="lbl">Articles — Cybermenaces</div>
+        </div>
+      </div>
+      <div class="stat-chip">
+        <div class="dot" style="background:var(--c4)"></div>
+        <div>
+          <div class="val" style="color:var(--c4)">05</div>
+          <div class="lbl">Articles — Réseaux</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════ -->
+  <!--  SECTION 1 — AUTOMATISATION DU SUPPORT -->
+  <!-- ══════════════════════════════════════ -->
+  <section id="support" class="section">
+    <div class="section-header reveal">
+      <div>
+        <div class="section-tag"><span class="dot"></span>Thème 01</div>
+        <h2 class="section-title">Automatisation du support</h2>
+      </div>
+      <div class="section-count">5 articles</div>
+    </div>
+    <div class="cards">
+
+      <div class="card reveal" style="animation-delay:.1s">
+        <div class="card-date">29 juin 2025</div>
+        <div class="card-title">5 meilleurs outils d'assistance informatique par IA</div>
+        <div class="card-desc">Article sur les solutions d'automatisation en ITSM, chatbots et gestion automatisée des tickets de support.</div>
+        <a class="card-link" href="https://blog.invgate.com/fr/ia-dans-lassistance-it" target="_blank" rel="noopener">
+          Lire l'article
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+      <div class="card reveal" style="animation-delay:.15s">
+        <div class="card-date">12 décembre 2024</div>
+        <div class="card-title">Les solutions d'infogérance en 2025 et l'IA</div>
+        <div class="card-desc">Les tendances infogérance intégrant de plus en plus l'automatisation et l'intelligence artificielle dans les services managés.</div>
+        <a class="card-link" href="https://www.rcb-informatique.fr/tendances-infogerance-2025/" target="_blank" rel="noopener">
+          Lire l'article
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+      <div class="card reveal" style="animation-delay:.2s">
+        <div class="card-date">23 juillet 2024</div>
+        <div class="card-title">Les nouveautés IT pour l'année 2025</div>
+        <div class="card-desc">Point sur les processus IT automatisés et l'intelligence artificielle au service du support informatique en entreprise.</div>
+        <a class="card-link" href="https://www.aptenia.fr/post/les-nouveaut%C3%A9s-it-pour-l-ann%C3%A9e-2025" target="_blank" rel="noopener">
+          Lire l'article
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+      <div class="card reveal" style="animation-delay:.25s">
+        <div class="card-date">19 novembre 2025</div>
+        <div class="card-title">Marché IT 2025 : pénurie de talents ou saturation ?</div>
+        <div class="card-desc">Comment la transformation digitale et l'automatisation transforment le métier de technicien support informatique.</div>
+        <a class="card-link" href="https://www.free-work.com/fr/tech-it/blog/actualites-informatiques/marche-it-2025-penurie-de-talents-ou-saturation" target="_blank" rel="noopener">
+          Lire l'article
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+      <div class="card reveal" style="animation-delay:.3s">
+        <div class="card-date">15 décembre 2024</div>
+        <div class="card-title">7 tendances de l'externalisation IT en 2025</div>
+        <div class="card-desc">Tour d'horizon des grandes tendances de l'outsourcing IT : automatisation, IA, cloud et nouveaux modèles de gestion externalisée.</div>
+        <a class="card-link" href="https://www.alter-solutions.fr/blog/outsourcing-tendances-it-2025" target="_blank" rel="noopener">
+          Lire l'article
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!--  SECTION 2 — EVOLUTION DE LA CYBERSÉCURITÉ  -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section id="cyber" class="section">
+    <div class="section-header reveal">
+      <div>
+        <div class="section-tag"><span class="dot"></span>Thème 02</div>
+        <h2 class="section-title">Évolution de la cybersécurité</h2>
+      </div>
+      <div class="section-count">6 articles</div>
+    </div>
+    <div class="cards">
+
+      <div class="card reveal" style="animation-delay:.1s">
+        <div class="card-date">31 décembre 2024</div>
+        <div class="card-title">Rapport sur l'état de la menace 2024–2025 — Advens</div>
+        <div class="card-desc">Analyse complète de l'évolution du paysage des cybermenaces et des vecteurs d'attaque les plus actifs en France et en Europe.</div>
+        <a class="card-link" href="https://info.advens.fr/fr/rapport-etat-de-la-menace-2025" target="_blank" rel="noopener">
+          Lire l'article
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+      <div class="card reveal" style="animation-delay:.15s">
+        <div class="card-date">24 septembre 2025</div>
+        <div class="card-title">Les 22 attaques informatiques à surveiller en 2025</div>
+        <div class="card-desc">Inventaire des principales formes d'attaques cyber en 2025 : ransomwares, phishing, supply chain, deepfake et exploitation de zero-days.</div>
+        <a class="card-link" href="https://www.bemsp.fr/attaque-informatique-2025/" target="_blank" rel="noopener">
+          Lire l'article
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+      <div class="card reveal" style="animation-delay:.2s">
+        <div class="card-date">1er juin 2025</div>
+        <div class="card-title">Panorama des cybermenaces 2024/2025 — tendances clés</div>
+        <div class="card-desc">Synthèse des évolutions majeures du threat landscape et des nouvelles techniques d'attaque repérées par les équipes de recherche en sécurité.</div>
+        <a class="card-link" href="https://sns-security.fr/panorama-cybermenaces-2024-2025-tendances-cles-evolutions/" target="_blank" rel="noopener">
+          Lire l'article
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+      <div class="card reveal" style="animation-delay:.25s">
+        <div class="card-date">23 juin 2025</div>
+        <div class="card-title">Cyberattaques 2025 : les 10 menaces clés à surveiller</div>
+        <div class="card-desc">Classement et analyse des menaces les plus dangereuses de l'année, avec des recommandations pour s'en protéger efficacement.</div>
+        <a class="card-link" href="https://www.oodrive.com/fr/blog/securite/cybersecurite/top-10-des-cyberattaques-2025/" target="_blank" rel="noopener">
+          Lire l'article
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+      <div class="card reveal" style="animation-delay:.3s">
+        <div class="card-date">14 juillet 2025</div>
+        <div class="card-title">L'état des lieux de la cybersécurité en France (2025)</div>
+        <div class="card-desc">Vue d'ensemble de la situation cybersécuritaire française : incidents marquants, secteurs les plus touchés et efforts de remédiation.</div>
+        <a class="card-link" href="https://dfm.fr/articles/etat-lieux-cybersecurite-france-2025/" target="_blank" rel="noopener">
+          Lire l'article
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+      <div class="card reveal" style="animation-delay:.35s">
+        <div class="card-date">12 novembre 2025</div>
+        <div class="card-title">La CNIL donne ses consignes pour renforcer la sécurité</div>
+        <div class="card-desc">Nouvelles recommandations de la CNIL pour sécuriser les grandes bases de données personnelles et renforcer la conformité RGPD.</div>
+        <a class="card-link" href="https://www.cnil.fr/fr/consignes-pour-renforcer-la-securite-des-grandes-bases-de-donnees" target="_blank" rel="noopener">
+          Lire l'article
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ════════════════════════════ -->
+  <!--  SECTION 3 — SÉCURITÉ RÉSEAUX -->
+  <!-- ════════════════════════════ -->
+  <section id="reseaux" class="section">
+    <div class="section-header reveal">
+      <div>
+        <div class="section-tag"><span class="dot"></span>Thème 03</div>
+        <h2 class="section-title">Sécurité des réseaux</h2>
+      </div>
+      <div class="section-count">5 articles</div>
+    </div>
+    <div class="cards">
+
+      <div class="card reveal" style="animation-delay:.1s">
+        <div class="card-date">17 mars 2025</div>
+        <div class="card-title">Bilan cybersécurité 2024 et perspectives 2025</div>
+        <div class="card-desc">Retour sur les grandes tendances de l'année passée et projection sur les menaces réseau qui marqueront 2025.</div>
+        <a class="card-link" href="https://tyrex-cyber.com/bilan-cybersecurite-2024-tendances-2025/" target="_blank" rel="noopener">
+          Lire l'article
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+      <div class="card reveal" style="animation-delay:.15s">
+        <div class="card-date">2 septembre 2024</div>
+        <div class="card-title">Quelles sont les tendances de la cybersécurité en 2025 ?</div>
+        <div class="card-desc">Analyse des grandes évolutions en matière de sécurisation des réseaux d'entreprise, Zero Trust et segmentation.</div>
+        <a class="card-link" href="https://www.studi.com/fr/blog/metiers-formations/tendances-cybersecurite-avenir-formation" target="_blank" rel="noopener">
+          Lire l'article
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+      <div class="card reveal" style="animation-delay:.2s">
+        <div class="card-date">26 novembre 2024</div>
+        <div class="card-title">Cybersécurité : tendances émergentes et à venir</div>
+        <div class="card-desc">Décryptage des nouvelles approches de sécurisation réseau : détection comportementale, SD-WAN sécurisé, SASE et SOC managé.</div>
+        <a class="card-link" href="https://www.sfrbusiness.fr/room/cybersecurite-en-entreprise/tendances-emergentes-et-a-venir/" target="_blank" rel="noopener">
+          Lire l'article
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+      <div class="card reveal" style="animation-delay:.25s">
+        <div class="card-date">14 juillet 2025</div>
+        <div class="card-title">Les outils de défense réseau les plus utilisés en 2024</div>
+        <div class="card-desc">Panorama des solutions et technologies de défense les plus déployées par les équipes sécurité françaises : EDR, SIEM, firewalls NGF.</div>
+        <a class="card-link" href="https://dfm.fr/articles/etat-lieux-cybersecurite-france-2025/" target="_blank" rel="noopener">
+          Lire l'article
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+      <div class="card reveal" style="animation-delay:.3s">
+        <div class="card-date">17 décembre 2025</div>
+        <div class="card-title">Failles FortiCloud SSO exploitées pour pirater Fortinet</div>
+        <div class="card-desc">Des vulnérabilités critiques dans FortiCloud SSO sont activement exploitées pour compromettre des équipements réseau Fortinet en production.</div>
+        <a class="card-link" href="https://www.it-connect.fr/les-failles-dans-forticloud-sso-desormais-exploitees-pour-pirater-les-equipements-fortinet/" target="_blank" rel="noopener">
+          Lire l'article
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ════════════════ -->
+  <!--  CONCLUSION      -->
+  <!-- ════════════════ -->
+  <section id="conclusion" class="conclusion">
+    <div class="conclusion-box reveal">
+      <div class="conclusion-label"><span class="dot"></span>Conclusion</div>
+      <h2>Une veille tournée vers<br>mon futur métier</h2>
+      <p>
+        Cette veille technologique sur <strong>l'automatisation du support</strong>, la <strong>cybersécurité</strong> et la <strong>sécurité des réseaux</strong> est directement utile pour mon futur métier. L'automatisation du support me permet de comprendre comment rendre les utilisateurs plus autonomes grâce aux outils comme les FAQ et les chatbots, et de libérer du temps pour les techniciens sur les tâches plus complexes.
+      </p>
+      <p>
+        La veille en <strong>cybersécurité</strong> m'aide à rester informé des menaces et des attaques actuelles, afin de mieux protéger les entreprises et réagir plus rapidement en cas d'incident.
+      </p>
+      <p>
+        Enfin, la veille en <strong>sécurité des réseaux</strong> me permet de mieux connaître les problématiques réelles du métier et les solutions utilisées aujourd'hui. Cette veille m'aide donc à développer mes compétences et à me préparer sérieusement à mon futur métier en <strong>sécurité réseaux</strong>.
+      </p>
+      <div class="conclusion-pills">
+        <span class="pill pill-cyan">Automatisation ITSM</span>
+        <span class="pill pill-violet">IA & Chatbots</span>
+        <span class="pill pill-rose">Cybermenaces 2025</span>
+        <span class="pill pill-green">Sécurité réseaux</span>
+        <span class="pill pill-cyan">Zero Trust</span>
+        <span class="pill pill-rose">RGPD & CNIL</span>
+        <span class="pill pill-green">EDR / SIEM</span>
+        <span class="pill pill-violet">Infogérance</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    Veille Technologique 2024–2025 &nbsp;·&nbsp; Support · Cybersécurité · Réseaux
+  </footer>
+
+  <script>
+    // Intersection Observer for scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Staggered card delay reset for viewport
+    document.querySelectorAll('.cards').forEach(grid => {
+      const cards = grid.querySelectorAll('.card.reveal');
+      cards.forEach((c, i) => { c.style.transitionDelay = `${i * 0.07}s`; });
+    });
+  </script>
+</body>
+</html>
